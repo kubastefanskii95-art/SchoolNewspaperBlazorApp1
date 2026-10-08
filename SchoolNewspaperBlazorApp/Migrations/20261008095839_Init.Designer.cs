@@ -12,7 +12,7 @@ using SchoolNewspaperBlazorApp.Data;
 namespace SchoolNewspaperBlazorApp.Migrations
 {
     [DbContext(typeof(NewspaperDbContext))]
-    [Migration("20261005093917_Init")]
+    [Migration("20261008095839_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -37,7 +37,10 @@ namespace SchoolNewspaperBlazorApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("PulbishDate")
+                    b.Property<int>("FileID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("PublishDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Text")
@@ -51,6 +54,27 @@ namespace SchoolNewspaperBlazorApp.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Articles");
+                });
+
+            modelBuilder.Entity("SchoolNewspaperBlazorApp.Data.MediaFile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Files");
                 });
 #pragma warning restore 612, 618
         }

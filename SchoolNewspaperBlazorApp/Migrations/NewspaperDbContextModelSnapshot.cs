@@ -53,13 +53,10 @@ namespace SchoolNewspaperBlazorApp.Migrations
                     b.ToTable("Articles");
                 });
 
-            modelBuilder.Entity("SchoolNewspaperBlazorApp.Data.File", b =>
+            modelBuilder.Entity("SchoolNewspaperBlazorApp.Data.MediaFile", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("FileName")
                         .IsRequired()
