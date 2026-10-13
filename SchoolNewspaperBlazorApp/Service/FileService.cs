@@ -13,7 +13,7 @@ namespace SchoolNewspaperBlazorApp.Service
         {
             _fileRepository = fileRepository;
         }
-        private readonly string uploadPath = @"C:\Users\Uczeń2026\source\repos\SchoolNewspaperBlazorApp\Images";
+        private readonly string uploadPath = @"C:\Users\Uczeń2026\source\repos\SchoolNewsPaperETIBlazorApp\Images";
         public async Task<string> GetPreviewAsync(IBrowserFile file)
         {
             using var stream = file.OpenReadStream(5 * 1024 * 1024);
@@ -39,12 +39,23 @@ namespace SchoolNewspaperBlazorApp.Service
             var id = await _fileRepository.GetLastFileID();
             var mediaFile = new MediaFile
             {
-               Id = id,
-               FileName = fileName,
+                Id = id,
+                FileName = fileName,
                 FileType = extension
             };
             await _fileRepository.AddFileAsync(mediaFile);
             return id;
         }
+        public async Task<string> GetFileNameByIdAsync(int id)
+        {
+            var mediaFile = await _fileRepository.GetFileByIdAsync(id);
+            return mediaFile.FileName;
+        }
+
+        public Task<MediaFile> GetFileByIdAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
+
 }

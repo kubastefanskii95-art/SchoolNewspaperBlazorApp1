@@ -1,0 +1,75 @@
+﻿@page "/login"
+@rendermode InteractiveServer
+
+@using SchoolNewspaperBlazorApp.Data
+@using SchoolNewspaperBlazorApp.Interfaces.Service
+
+@inject IAuthService AuthService
+
+<div class="container mt-5" style="max-width: 400px;">
+
+    <h3 class="text-center mb-4">Logowanie</h3>
+
+    <EditForm Model="@user"
+              OnValidSubmit="LoginAsync"
+              FormName="LoginForm">
+
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label class="form-label">Login</label>
+            <InputText class="form-control"
+                       @bind-Value="user.Login"
+                       placeholder="Wpisz login" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Hasło</label>
+            <InputText class="form-control"
+                       type="password"
+                       @bind-Value="user.Haslo"
+                       placeholder="Wpisz hasło" />
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">
+            Zaloguj się
+        </button>
+
+    </EditForm>
+
+    @if (!string.IsNullOrWhiteSpace(message))
+    {
+        <div class="alert @(loginSuccess ? "alert-success" : "alert-danger") mt-3">
+            @message
+        </div>
+    }
+
+</div>
+
+@code {
+    private User user = new();
+
+    private string message = string.Empty;
+    private bool loginSuccess;
+
+    private async Task LoginAsync()
+    {
+        message = string.Empty;
+        loginSuccess = false;
+
+        var result = await AuthService.LoginAsync(
+            user.Login,
+            user.Haslo);
+
+        if (result is not null)
+        {
+            loginSuccess = true;
+            message = $"Witaj, {result.Login}! Logowanie udane.";
+        }
+        else
+        {
+            message = "Nieprawidłowy login lub hasło.";
+        }
+    }
+}

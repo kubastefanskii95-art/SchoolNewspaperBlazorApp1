@@ -18,8 +18,12 @@ namespace SchoolNewspaperBlazorApp.Repository
                 .OrderByDescending(f => f.Id)
                 .Select(f => f.Id)
                 .FirstOrDefaultAsync();
-            return id++;
+            return id + 1;
 
+        }
+        public async Task<MediaFile> GetFileByIdAsync(int id)
+        {
+            return await _context.Files.FindAsync(id);
         }
         public async Task AddFileAsync(Data.MediaFile file) 
         {

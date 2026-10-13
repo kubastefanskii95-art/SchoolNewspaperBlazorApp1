@@ -1,36 +1,507 @@
 ﻿@inherits LayoutComponentBase
 
-<nav class="navbar navbar-expand-lg bg-dark navbar-dark shadow">
-    <div class="container">
+<style>
+    @@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-        <a class="navbar-brand fw-bold fs-4" href="/">
-            𝙂𝙖𝙯𝙚𝙩𝙠𝙖
+    body {
+        background:
+            radial-gradient(1200px 700px at 15% -10%, rgba(56, 132, 255, .28), transparent 60%),
+            radial-gradient(1000px 700px at 85% 110%, rgba(245, 158, 11, .18), transparent 60%),
+            radial-gradient(900px 500px at 60% 40%, rgba(56, 189, 248, .10), transparent 70%),
+            linear-gradient(180deg, #16233F 0%, #101A33 60%, #0E172C 100%) no-repeat;
+        min-height: 100vh;
+        font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+        color: #EEF3FF;
+        background-attachment: fixed;
+    }
+
+    /* ================== TOPBAR ================== */
+    .topbar {
+        --ink: #EEF3FF;
+        --muted: #A7B6D3;
+        --primary: #4F8BFF;
+        --primary-2: #56C7F5;
+        --amber: #F59E0B;
+        --border: rgba(140, 185, 255, .22);
+        --bg: rgba(20, 32, 58, .72);
+
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: var(--bg);
+        backdrop-filter: blur(16px) saturate(150%);
+        -webkit-backdrop-filter: blur(16px) saturate(150%);
+        border-bottom: 1px solid var(--border);
+        box-shadow:
+            0 10px 30px -20px rgba(2, 8, 23, .9),
+            inset 0 -1px 0 rgba(255, 255, 255, .03);
+        font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+        animation: topbar-in .5s ease both;
+    }
+
+    @@keyframes topbar-in {
+        from { transform: translateY(-100%); opacity: 0; }
+        to   { transform: translateY(0);     opacity: 1; }
+    }
+
+    /* świecąca linia pod topbarem – animowana */
+    .topbar::after {
+        content: "";
+        position: absolute;
+        left: 0; right: 0; bottom: -1px;
+        height: 2px;
+        background: linear-gradient(90deg,
+            transparent 0%,
+            rgba(79, 139, 255, .9) 25%,
+            rgba(86, 199, 245, .9) 50%,
+            rgba(245, 158, 11, .9) 75%,
+            transparent 100%);
+        background-size: 200% 100%;
+        animation: line-flow 6s linear infinite;
+        opacity: .8;
+        pointer-events: none;
+    }
+
+    @@keyframes line-flow {
+        from { background-position: 0% 0; }
+        to   { background-position: 200% 0; }
+    }
+
+    .topbar-inner {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.75rem 1.5rem;
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 0.75rem 1.25rem;
+    }
+
+    /* ---------- Logo ---------- */
+    .topbar .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        text-decoration: none;
+    }
+
+    .topbar .brand-logo {
+        position: relative;
+        display: grid;
+        place-items: center;
+        width: 2.4rem;
+        height: 2.4rem;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #4F8BFF 0%, #56C7F5 55%, #F59E0B 130%);
+        background-size: 200% 200%;
+        animation: logo-shift 8s ease-in-out infinite;
+        box-shadow:
+            0 14px 30px -12px rgba(79, 139, 255, .95),
+            inset 0 1px 0 rgba(255, 255, 255, .4);
+        color: #fff;
+        font-size: 1.15rem;
+        font-weight: 800;
+        overflow: hidden;
+    }
+
+    /* błysk na logo */
+    .topbar .brand-logo::before {
+        content: "";
+        position: absolute;
+        top: 0; left: -60%;
+        width: 60%; height: 100%;
+        background: linear-gradient(120deg, transparent, rgba(255, 255, 255, .55), transparent);
+        transform: skewX(-20deg);
+        animation: logo-shine 4.5s ease-in-out infinite;
+    }
+
+    .topbar .brand-logo::after {
+        content: "";
+        position: absolute;
+        inset: -3px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, rgba(79, 139, 255, .45), rgba(245, 158, 11, .45));
+        filter: blur(10px);
+        z-index: -1;
+        opacity: .7;
+    }
+
+    @@keyframes logo-shift {
+        0%, 100% { background-position: 0% 50%; }
+        50%      { background-position: 100% 50%; }
+    }
+
+    @@keyframes logo-shine {
+        0%, 60%, 100% { left: -60%; }
+        30%           { left: 130%; }
+    }
+
+    .topbar .brand-text { display: flex; flex-direction: column; line-height: 1.05; }
+
+    .topbar .brand-name {
+        color: #FFFFFF;
+        font-size: 1.15rem;
+        font-weight: 800;
+        letter-spacing: -.02em;
+    }
+
+    .topbar .brand-sub {
+        color: var(--muted);
+        font-size: .72rem;
+        font-weight: 500;
+        letter-spacing: .08em;
+    }
+
+    /* ---------- Menu ---------- */
+    .topbar .topbar-menu {
+        display: flex;
+        flex: 1;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .topbar .topbar-links {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .topbar .tlink {
+        position: relative;
+        padding: 0.5rem 0.95rem;
+        border-radius: 999px;
+        color: var(--muted);
+        font-size: 0.93rem;
+        font-weight: 600;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: background .25s ease, color .25s ease, box-shadow .25s ease, transform .2s ease;
+    }
+
+    /* podkreślenie „płynące” pod każdym linkiem */
+    .topbar .tlink::before {
+        content: "";
+        position: absolute;
+        left: 50%;
+        bottom: 4px;
+        width: 0;
+        height: 2px;
+        border-radius: 2px;
+        background: linear-gradient(90deg, #4F8BFF, #F59E0B);
+        transform: translateX(-50%);
+        transition: width .25s ease;
+    }
+
+    .topbar .tlink:hover {
+        color: #FFFFFF;
+        background: rgba(79, 139, 255, .16);
+        box-shadow: inset 0 0 0 1px rgba(140, 185, 255, .28);
+        transform: translateY(-1px);
+    }
+
+    .topbar .tlink:hover::before { width: 55%; }
+
+    .topbar .tlink.active {
+        color: #FFFFFF;
+        background: linear-gradient(180deg, rgba(79, 139, 255, .34), rgba(79, 139, 255, .16));
+        box-shadow:
+            inset 0 0 0 1px rgba(140, 185, 255, .4),
+            0 12px 24px -14px rgba(79, 139, 255, 1);
+    }
+
+    .topbar .tlink.active::before { width: 70%; }
+
+    /* pulsująca kropka na aktywnym */
+    .topbar .tlink.active::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        bottom: -3px;
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #4F8BFF, #F59E0B);
+        transform: translateX(-50%);
+        box-shadow: 0 0 10px rgba(245, 158, 11, .9);
+        animation: dot-pulse 2.2s ease-in-out infinite;
+    }
+
+    @@keyframes dot-pulse {
+        0%, 100% { box-shadow: 0 0 6px rgba(245, 158, 11, .8), 0 0 0 0 rgba(245, 158, 11, .45); }
+        50%      { box-shadow: 0 0 12px rgba(245, 158, 11, 1), 0 0 0 6px rgba(245, 158, 11, 0); }
+    }
+
+    /* ---------- Szukaj + Login ---------- */
+    .topbar .topbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+    }
+
+    .topbar .search {
+        display: flex;
+        align-items: center;
+        margin: 0;
+        padding: 0.2rem 0.3rem 0.2rem 0.95rem;
+        background: rgba(120, 165, 240, .14);
+        border: 1px solid rgba(140, 185, 255, .26);
+        border-radius: 999px;
+        -webkit-backdrop-filter: blur(8px);
+        backdrop-filter: blur(8px);
+        transition: border-color .25s ease, box-shadow .25s ease, background .25s ease;
+    }
+
+    .topbar .search:hover { border-color: rgba(140, 185, 255, .45); }
+
+    .topbar .search:focus-within {
+        background: rgba(120, 165, 240, .22);
+        border-color: rgba(86, 199, 245, .75);
+        box-shadow: 0 0 0 4px rgba(79, 139, 255, .22);
+    }
+
+    .topbar .search svg {
+        width: 1rem;
+        height: 1rem;
+        color: #A7B6D3;
+        flex: 0 0 auto;
+        transition: color .25s ease, transform .25s ease;
+    }
+
+    .topbar .search:focus-within svg { color: #86D7FF; transform: scale(1.1); }
+
+    .topbar .search input {
+        width: 11rem;
+        border: 0;
+        outline: 0;
+        background: transparent;
+        color: #EEF3FF;
+        font-family: inherit;
+        font-size: 0.92rem;
+        padding: 0.35rem 0.5rem;
+    }
+
+    .topbar .search input::placeholder { color: #93A7C8; }
+
+    .topbar .search button {
+        border: 0;
+        border-radius: 999px;
+        background: transparent;
+        color: #9DC2FF;
+        padding: 0.4rem 0.9rem;
+        font-family: inherit;
+        font-size: 0.88rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background .2s ease, color .2s ease, transform .2s ease;
+    }
+
+    .topbar .search button:hover {
+        background: rgba(79, 139, 255, .25);
+        color: #FFD9A0;
+        transform: translateY(-1px);
+    }
+
+    .topbar .login-btn {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+        padding: 0.55rem 1.15rem;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #4F8BFF 0%, #56C7F5 55%, #F59E0B 130%);
+        background-size: 200% 200%;
+        animation: logo-shift 8s ease-in-out infinite;
+        box-shadow:
+            0 14px 26px -12px rgba(79, 139, 255, .95),
+            inset 0 1px 0 rgba(255, 255, 255, .4);
+        color: #fff;
+        font-size: 0.9rem;
+        font-weight: 700;
+        text-decoration: none;
+        overflow: hidden;
+        transition: transform .2s ease, box-shadow .25s ease;
+    }
+
+    .topbar .login-btn::before {
+        content: "";
+        position: absolute;
+        top: 0; left: -60%;
+        width: 60%; height: 100%;
+        background: linear-gradient(120deg, transparent, rgba(255, 255, 255, .55), transparent);
+        transform: skewX(-20deg);
+        transition: left .6s ease;
+    }
+
+    .topbar .login-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 20px 34px -14px rgba(79, 139, 255, 1);
+        color: #fff;
+    }
+
+    .topbar .login-btn:hover::before { left: 130%; }
+
+    .topbar .login-btn svg { width: .95rem; height: .95rem; }
+
+    .topbar :focus-visible {
+        outline: 3px solid rgba(86, 199, 245, .8);
+        outline-offset: 2px;
+    }
+
+    /* ---------- Burger ---------- */
+    .topbar .nav-toggle {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .topbar .burger {
+        display: none;
+        margin-left: auto;
+        padding: 0.6rem;
+        border-radius: 12px;
+        background: rgba(120, 165, 240, .16);
+        border: 1px solid rgba(140, 185, 255, .3);
+        cursor: pointer;
+        flex-direction: column;
+        gap: 4px;
+        transition: background .2s ease, border-color .2s ease, transform .2s ease;
+    }
+
+    .topbar .burger:hover {
+        background: rgba(120, 165, 240, .26);
+        border-color: rgba(86, 199, 245, .55);
+        transform: translateY(-1px);
+    }
+
+    .topbar .burger span {
+        display: block;
+        width: 1.25rem;
+        height: 2px;
+        border-radius: 2px;
+        background: #EEF3FF;
+        transition: transform .25s ease, opacity .25s ease;
+    }
+
+    .topbar .nav-toggle:checked ~ .burger span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+    .topbar .nav-toggle:checked ~ .burger span:nth-child(2) { opacity: 0; }
+    .topbar .nav-toggle:checked ~ .burger span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+    /* ================== MAIN ================== */
+    main.container {
+        position: relative;
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 1.75rem 1.25rem 3rem;
+        animation: fade-up .6s .1s ease both;
+    }
+
+    @@keyframes fade-up {
+        from { opacity: 0; transform: translateY(14px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ================== RESPONSYWNOŚĆ ================== */
+    @@media (max-width: 960px) {
+        .topbar .burger { display: flex; }
+
+        .topbar .topbar-menu {
+            display: none;
+            flex-basis: 100%;
+            flex-direction: column;
+            align-items: stretch;
+            gap: .75rem;
+            padding-top: .75rem;
+            margin-top: .5rem;
+            border-top: 1px solid var(--border);
+            animation: fade-up .3s ease both;
+        }
+
+        .topbar .nav-toggle:checked ~ .topbar-menu { display: flex; }
+        .topbar .nav-toggle:focus-visible ~ .burger { outline: 3px solid rgba(86, 199, 245, .8); }
+
+        .topbar .topbar-links { flex-direction: column; align-items: stretch; gap: .25rem; }
+        .topbar .tlink {
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            font-size: 0.98rem;
+        }
+        .topbar .tlink::before { display: none; }
+        .topbar .tlink.active::after { display: none; }
+
+        .topbar .topbar-actions { flex-direction: column; align-items: stretch; gap: .6rem; }
+        .topbar .search { width: 100%; }
+        .topbar .search input { flex: 1; width: auto; }
+        .topbar .login-btn { justify-content: center; text-align: center; }
+    }
+
+    @@media (prefers-reduced-motion: reduce) {
+        .topbar,
+        .topbar .tlink,
+        .topbar .login-btn,
+        .topbar .search,
+        .topbar .search button,
+        .topbar .burger { transition: none; animation: none; }
+        .topbar .login-btn:hover,
+        .topbar .tlink:hover,
+        .topbar .burger:hover { transform: none; }
+        .topbar::after { animation: none; }
+        .topbar .brand-logo,
+        .topbar .brand-logo::before,
+        .topbar .login-btn { animation: none; }
+        main.container { animation: none; }
+    }
+</style>
+
+<header class="topbar">
+    <div class="topbar-inner">
+
+        <a class="brand" href="/">
+            <span class="brand-logo">G</span>
+            <span class="brand-text">
+                <span class="brand-name">Gazetka</span>
+                <span class="brand-sub">SZKOLNA · ONLINE</span>
+            </span>
         </a>
 
-        <div class="navbar-nav ms-4">
-            <a class="nav-link active" href="/">Strona główna</a>
-            <a class="nav-link" href="/aktualnosci">Aktualności</a>
-            <a class="nav-link" href="/wydarzenia">Wydarzenia</a>
-            <a class="nav-link" href="/kontakt">Kontakt</a>
-            <a class="nav-link" href="/adminPanel">Admin Panel</a>
+        <input type="checkbox" id="nav-toggle" class="nav-toggle" />
+        <label for="nav-toggle" class="burger" aria-label="Pokaż menu">
+            <span></span><span></span><span></span>
+        </label>
+
+        <div class="topbar-menu">
+            <nav class="topbar-links">
+                <NavLink class="tlink" href="/" Match="NavLinkMatch.All">Strona główna</NavLink>
+                <NavLink class="tlink" href="/aktualnosci">Aktualności</NavLink>
+                <NavLink class="tlink" href="/wydarzenia">Wydarzenia</NavLink>
+                <NavLink class="tlink" href="/kontakt">Kontakt</NavLink>
+                <NavLink class="tlink" href="/adminPanel">Admin Panel</NavLink>
+            </nav>
+
+            <div class="topbar-actions">
+                <form class="search" role="search" @onsubmit:preventDefault="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="11" cy="11" r="7" />
+                        <path d="m20 20-3.5-3.5" />
+                    </svg>
+                    <input type="search" placeholder="Szukaj..." aria-label="Szukaj" />
+                    <button type="submit">Szukaj</button>
+                </form>
+
+                <a class="login-btn" href="/login">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                        <path d="M10 17l5-5-5-5" />
+                        <path d="M15 12H3" />
+                    </svg>
+                    Login
+                </a>
+            </div>
         </div>
 
-        <form class="d-flex ms-auto" role="search">
-            <input class="form-control me-2"
-                   type="search"
-                   placeholder="Szukaj..."
-                   aria-label="Szukaj" />
-
-            <button class="btn" type="submit">
-                Szukaj
-            </button>
-        </form>
-
     </div>
-</nav>
+</header>
 
-<main class="container py-4">
+<main class="container">
     @Body
 </main>
-
-
